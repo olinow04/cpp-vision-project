@@ -1,0 +1,37 @@
+name: CMake
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y build-essential cmake libopencv-dev
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            brew update
+            brew install cmake opencv
+          fi
+
+      - name: Configure (CMake)
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release -- -j$(nproc || sysctl -n hw.ncpu)
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure

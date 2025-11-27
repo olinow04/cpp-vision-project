@@ -1,0 +1,30 @@
+# CMake
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# binaries
+*.exe
+*.out
+*.o
+*.a
+*.so
+CppVisionProject
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# compile commands
+compile_commands.json
+
+# Python envs
+.env/
+venv/
+
+# logs / output
+data/output/
