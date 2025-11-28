@@ -3,51 +3,55 @@
 #include <vector>
 #include "core/image_processor.hpp"
 #include "core/effects.hpp"
+#include "core/image_loader.hpp"
 
 
 int main() {
+    cvp::ImageLoader loader;
+
     const std::string image_path = "../assets/nature.jpg";
     const std::string image_path2 = "../assets/flower.jpg";
     const std::string image_path3 = "../assets/night.jpg";
     const std::string image_path4 = "../assets/car.jpg";
-    cv::Mat img = cv::imread(image_path);
-    cv::Mat img2 = cv::imread(image_path2);
-    cv::Mat img3 = cv::imread(image_path3);
-    cv::Mat img4 = cv::imread(image_path4);
 
-    if(img.empty()) {
+    auto img = loader.load(image_path);
+    auto img2 = loader.load(image_path2);
+    auto img3 = loader.load(image_path3);
+    auto img4 = loader.load(image_path4);
+    
+    if(!img) {
         std::cerr << "Error: Could not load image at " << image_path << std::endl;
         return 1;
     }
 
-    if(img2.empty()) {
+    if(!img2) {
         std::cerr << "Error: Could not load image at " << image_path2 << std::endl;
         return 1;
     }
 
-    if(img3.empty()) {
+    if(!img3) {
         std::cerr << "Error: Could not load image at " << image_path3 << std::endl;
         return 1;
     }
 
-    if(img4.empty()) {
+    if(!img4) {
         std::cerr << "Error: Could not load image at " << image_path4 << std::endl;
         return 1;
     }
 
     cvp::ImageProcessor processor;
-    cv::Mat gray = processor.toGray(img);
-    cv::Mat resized = processor.resize(img, 400, 300);
-    cv::Mat rotated = processor.rotate(img, 45.0);
-    cv::Mat blurred = processor.blur(img2, 10);
-    cv::Mat edges = processor.detectEdges(img2, 100, 200);
-    cv::Mat thresholded = processor.threshold(img2, 128, 255);
-    cv::Mat sharpened = processor.sharpen(img2);
-    cv::Mat brightContrast = processor.adjustBrightnessContrast(img2, 1.2, 30);
-    cv::Mat histEqualized = processor.histogramEqualization(img3);
-    cv::Mat cartoon = cvp::effects::cartoonEffect(img4);
-    cv::Mat pixelated = cvp::effects::pixelateEffect(img4, 10);
-    cv::Mat motionBlurred = cvp::effects::motionBlur(img4, 15);
+    cv::Mat gray = processor.toGray(*img);
+    cv::Mat resized = processor.resize(*img, 400, 300);
+    cv::Mat rotated = processor.rotate(*img, 45.0);
+    cv::Mat blurred = processor.blur(*img2, 10);
+    cv::Mat edges = processor.detectEdges(*img2, 100, 200);
+    cv::Mat thresholded = processor.threshold(*img2, 128, 255);
+    cv::Mat sharpened = processor.sharpen(*img2);
+    cv::Mat brightContrast = processor.adjustBrightnessContrast(*img2, 1.2, 30);
+    cv::Mat histEqualized = processor.histogramEqualization(*img3);
+    cv::Mat cartoon = cvp::effects::cartoonEffect(*img4);
+    cv::Mat pixelated = cvp::effects::pixelateEffect(*img4, 10);
+    cv::Mat motionBlurred = cvp::effects::motionBlur(*img4, 15);
 
     std::vector<std::pair<std::string, cv::Mat>> results = {
         {"gray_image_result.jpg", gray},
@@ -65,7 +69,7 @@ int main() {
     };
 
     for(const auto& [filename, mat] : results) {
-        if(!cv::imwrite("../data/output/" + filename, mat)) {
+        if(!loader.save("../data/output/" + filename, mat)) {
             std::cerr << "Error: Could not write image to " << filename << std::endl;
         }
     }
