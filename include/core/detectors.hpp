@@ -18,4 +18,14 @@ namespace cvp {
             label = lbl;
         }
     };
+
+    struct CornerPoint {
+        cv::Point2f position;
+        float response;
+
+        CornerPoint(const cv::Point2f& pos, float resp = 0.0f){
+            position = pos;
+            response = resp;
+        }
+    };
 }
